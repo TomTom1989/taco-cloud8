@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Taco Cloud</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Assuming accessToken is stored in session storage
+            var accessToken = sessionStorage.getItem('accessToken');
+
+            $('#getAllIngredientsBtn').click(function() {
+                fetchIngredients(accessToken);
+            });
+        });
+
+        function fbLogoutUser() {
+            FB.getLoginStatus(function(response) {
+                if (response && response.status === 'connected') {
+                    FB.logout(function(response) {
+                        document.location.reload();
+                    });
+                }
+            });
+        }
+
+        function fetchIngredients(accessToken) {
+            $.ajax({
+                url: 'http://localhost:8080/data-api/ingredients',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                success: function(data) {
+                    const ingredientsList = $('#ingredientsList');
+                    ingredientsList.empty();
+                    $.each(data, function(index, ingredient) {
+                        ingredientsList.append('<li>' + ingredient.name + '</li>');
+                    });
+                },
+                error: function() {
+                    console.error('Error fetching ingredients');
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Welcome to TacosX</h1>
+    <img th:src="@{/images/tacos.jpg}"/>
+
+    <div th:if="${logoutMessage}" th:text="${logoutMessage}"></div>
+
+    <form method="POST" th:action="@{/logout}" onsubmit="fbLogoutUser()">
+        <input type="submit" value="Logout"/>
+    </form>
+    
+    <button id="getAllIngredientsBtn">Get All Ingredients</button>
+    <ul id="ingredientsList"></ul>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scope Consent</title>
+</head>
+<body>
+    <h1>Scope Consent</h1>
+    <p>Please approve the following scopes:</p>
+    <ul>
+        <li>writeIngredients</li>
+        <li>deleteIngredients</li>
+    </ul>
+  <form method="POST" action="/process-consent">
+    <input type="checkbox" name="scope" value="writeIngredients"> Write Ingredients<br>
+    <input type="checkbox" name="scope" value="deleteIngredients"> Delete Ingredients<br>
+    <button type="submit" name="consent" value="approve">Approve</button>
+    <button type="submit" name="consent" value="deny">Deny</button>
+</form>
+
+</body>
+</html>

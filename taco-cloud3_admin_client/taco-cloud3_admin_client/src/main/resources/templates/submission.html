@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Ingredient</title>
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Submit New Ingredient</h2>
+<form id="ingredientForm">
+    <input type="hidden" id="authorizationCode" name="authorizationCode">
+    
+    <div class="form-group">
+        <label for="ingredientId">Ingredient ID:</label>
+        <input type="text" id="ingredientId" name="id" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="ingredientName">Ingredient Name:</label>
+        <input type="text" id="ingredientName" name="name" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="ingredientType">Ingredient Type:</label>
+        <select id="ingredientType" name="type" required>
+            <option value="PROTEIN">Protein</option>
+            <option value="VEGGIES">Veggies</option>
+            <option value="CHEESE">Cheese</option>
+            <option value="SAUCE">Sauce</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+
+    <button type="submit">Submit Ingredient</button>
+</form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Extract the authorization code from the URL
+        var authCode = new URLSearchParams(window.location.search).get('code');
+        if (authCode) {
+            // Send the authorization code to the backend
+            fetch('/api/ingredients/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `authorizationCode=${authCode}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.accessToken) {
+                    // Save the access token in local storage or a variable for later use
+                    localStorage.setItem('accessToken', data.accessToken);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('ingredientForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            var ingredientId = document.getElementById('ingredientId').value;
+            var ingredientName = document.getElementById('ingredientName').value;
+            var ingredientType = document.getElementById('ingredientType').value;
+            var username = document.getElementById('username').value; // Retrieve the username
+            var accessToken = localStorage.getItem('accessToken'); // Retrieve the access token
+
+            fetch('/api/ingredients/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    id: ingredientId,
+                    name: ingredientName,
+                    type: ingredientType,
+                    username: username // Include username in the request body
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Something went wrong');
+                }
+            })
+            .then(data => {
+                console.log('Success:', data);
+                // Handle successful response
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+
+logging:
+  level:
+    org:
+      org.springframework.security: DEBUG
+      org.springframework.security.oauth2: DEBUG 
+
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+  sql:
+    init:
+      mode: always
+      platform: h2
+      scripts: classpath:schema.sql,classpath:data.sql
+
+      
+      
+  data:
+     rest:
+       base-path: /data-api
+       
+  security: 
+     oAuth2:
+       resourceserver:
+         jwt:jwk-set-uri: http://localhost:9000/oauth2/jwks
+           
+
+
+    
+security:
+  oauth2:
+    client:
+      registration:
+        facebook:
+          clientId: 2291618721048050
+          clientSecret: e2f74f246bd193335ee806c5419d1ee6
+          scope: email, public_profile
+          
+        oauth2:
+          clientId: taco-admin-client
+          clientSecret: secret
+          
+          
+server:
+  port: 9000
+
+
+  data:
+    rest:
+      base-path: /data-api
+
+
+            
+
+  oauth2:
+    resourceserver:
+      jwt:
+        jwk-set-uri: http://localhost:9000/oauth2/jwks
+     
+
+Spring: 
+   boot:
+    admin:
+       client:
+         url: http://localhost:9090
+         username: admin
+         password: 53cr3t
+         
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  '*'
+  endpoint:
+    health:
+      show-details: always          
+
+        
+
+ 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Taco Cloud</title>
+    <meta charset="UTF-8">
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+    <script>
+        function statusChangeCallback(response) {
+			console.log(response)
+			//alert('Status change callback fired!');
+            console.log('statusChangeCallback');
+            console.log(response);
+            if (response.status === 'connected') {
+				alert('Connected');
+                // User logged in, redirect to server-side OAuth2 endpoint
+                window.location.href = '/my-oauth2-endpoint';
+            } else {
+				 alert('Not connected');
+                document.getElementById('status').innerHTML = 'Please log ' +
+                'into this webpage.';
+            }
+        }
+
+        function checkLoginState() {
+			 //alert('Check Login State');
+            FB.getLoginStatus(function(response) {
+                statusChangeCallback(response);
+            });
+        }
+
+        window.fbAsyncInit = function() {
+			//alert('FB SDK Initialized');
+            FB.init({
+                appId      : '2291618721048050', // Replace with your Facebook App ID
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v18.0' // Replace with your Graph API version
+            });
+
+            FB.getLoginStatus(function(response) {
+				//alert('Get Login Status');
+                statusChangeCallback(response);
+            });
+        };
+    </script>
+</head>
+<body>
+    <h1>Login</h1>
+    <img th:src="@{/images/tacos.jpg}"/>
+    <div th:if="${error}">
+        Unable to login. Check your username and password.
+    </div>
+    <p>New here? Click <a th:href="@{/register}">here</a> to register.</p>
+    
+    <!-- Facebook Login Button -->
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
+    <div id="status"></div>
+    
+    <!-- Username and Password Form -->
+    <form method="POST" th:action="@{/login}" id="loginForm">
+        <div>
+            <label for="username">Username: </label>
+            <input type="text" name="username" id="username" />
+        </div>
+        <div>
+            <label for="password">Password: </label>
+            <input type="password" name="password" id="password" />
+        </div>
+        <div>
+            <input type="submit" value="Login"/>
+        </div>
+        
+        <!-- in login.html -->
+<div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+    <p th:text="${errorMessage}"></p>
+</div>
+
+    </form>
+</body>
+</html>
